@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QUẢN LÝ THIỆP MỜI</title>
     
-    <!-- Cài đặt Favicon và Ảnh nền chia sẻ Zalo/Facebook -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/TuanLamVi/invite/main/favicon.png">
     <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/TuanLamVi/invite/main/favicon.png">
     <meta property="og:image" content="https://raw.githubusercontent.com/TuanLamVi/sendinvite/main/logo.jpg">
@@ -20,7 +19,6 @@
         .canvas-wrapper { position: relative; }
         canvas { width: 100%; border-radius: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        /* ĐÃ SỬA CSS POPUP THÀNH DẠNG BOTTOM SHEET CHUẨN APP */
         .popup { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); border-radius: 20px 20px 0 0; padding: 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); display: none; z-index: 2000; border-top: 1px solid rgba(255,255,255,0.6); box-sizing: border-box; max-height: 80vh; overflow-y: auto; }
         .popup.active { display: block; animation: slideUp 0.3s ease-out; }
         
@@ -120,7 +118,7 @@
         </div>
     </div>
 
-    <!-- POPUP CHỈNH SỬA THIỆP (ĐÃ CHUYỂN THÀNH BOTTOM SHEET) -->
+    <!-- POPUP CHỈNH SỬA THIỆP -->
     <div class="popup" id="popup">
         <div class="popup-header"><div class="popup-title">✏️ Chỉnh sửa thiệp</div><button class="close-btn" onclick="hidePopup()">×</button></div>
         <div class="section"><label class="section-label">NỘI DUNG</label><div class="input-group"><input type="text" id="text" placeholder="Nhập tên khách mời..."><button class="clear-btn" onclick="clearText()">X</button></div></div>
@@ -130,13 +128,20 @@
         <div class="action-group"><button class="btn-download" onclick="save()">📥 TẢI VỀ</button><button class="btn-share" onclick="share()">📤 GỬI</button><button class="btn-full" onclick="saveToGuestList()">💾 LƯU VÀO DANH SÁCH</button></div>
     </div>
 
-    <!-- POPUP KHAI BÁO THÔNG TIN SỰ KIỆN -->
+    <!-- POPUP KHAI BÁO THÔNG TIN SỰ KIỆN (ĐÃ THÊM ĐẾM NGƯỢC) -->
     <div class="event-popup-overlay" id="eventPopupOverlay" onclick="closeEventPopupOnOutside(event)">
         <div class="event-popup" id="eventPopupContent">
             <div class="ep-header"><h3>Khai báo chi tiết sự kiện</h3><button class="close-btn" onclick="hideEventPopup()" style="width:28px; height:28px; font-size:18px;">×</button></div>
             <div class="ep-group"><label>Tiêu đề sự kiện (VD: Lễ Thành Hôn):</label><input type="text" id="evTitle" placeholder="Lễ Thành Hôn"></div>
             <div class="ep-group"><label>Tên Cô dâu & Chú rể:</label><input type="text" id="evNames" placeholder="Quỳnh Chi & Anh Tuấn"></div>
-            <div class="ep-group"><label>Thời gian (Giờ - Ngày/Tháng/Năm):</label><input type="text" id="evTime" placeholder="10:00 Sáng - 02/05/2026"></div>
+            
+            <div class="ep-group">
+                <label style="color: #4CAF50;">⏳ Cài đặt Đồng hồ Đếm ngược (Quan trọng):</label>
+                <input type="datetime-local" id="evCountdown" style="border-color: #4CAF50; background: #e8f5e9;">
+                <div style="font-size: 11px; color: #666; margin-top: 3px;">Chọn chính xác ngày giờ tổ chức để đồng hồ đếm ngược hoạt động.</div>
+            </div>
+
+            <div class="ep-group"><label>Dòng thời gian hiển thị (Giờ - Ngày/Tháng):</label><input type="text" id="evTime" placeholder="10:00 Sáng - 02/05/2026"></div>
             <div class="ep-group"><label>Tên Địa điểm / Nhà hàng:</label><input type="text" id="evLocation" placeholder="Trung tâm TCSK Khánh Huy"></div>
             <div class="ep-group"><label>Địa chỉ cụ thể:</label><input type="text" id="evAddress" placeholder="Xã Quỳ Châu, Nghệ An"></div>
             <div class="ep-group"><label>Link Google Maps dẫn đường:</label><input type="text" id="evMap" placeholder="https://maps.app.goo.gl/xxx"></div>
@@ -173,7 +178,6 @@
     </div>
 
     <script>
-        // API CỦA BẠN ĐÃ ĐƯỢC GẮN CHUẨN
         const API_URL = "https://script.google.com/macros/s/AKfycbxJWMMOscQWsCGwxdQxcrqmnmJ5wGsYle8ZFt1O6F4bEIr57h188KOi23BdkaTc9hkT/exec"; 
 
         const canvas = document.getElementById("canvas"); const ctx = canvas.getContext("2d");
@@ -211,6 +215,8 @@
                             document.getElementById("evTime").value = ev.time || ""; document.getElementById("evLocation").value = ev.location || "";
                             document.getElementById("evAddress").value = ev.address || ""; document.getElementById("evMap").value = ev.mapLink || "";
                             document.getElementById("evPhone").value = ev.phone || "";
+                            // Load giờ đếm ngược
+                            if (ev.countdown) document.getElementById("evCountdown").value = ev.countdown;
                         }
                     } catch(e){}
 
@@ -268,7 +274,8 @@
             const evData = {
                 title: document.getElementById("evTitle").value, names: document.getElementById("evNames").value,
                 time: document.getElementById("evTime").value, location: document.getElementById("evLocation").value,
-                address: document.getElementById("evAddress").value, mapLink: document.getElementById("evMap").value, phone: document.getElementById("evPhone").value
+                address: document.getElementById("evAddress").value, mapLink: document.getElementById("evMap").value, phone: document.getElementById("evPhone").value,
+                countdown: document.getElementById("evCountdown").value // Lưu thời gian đếm ngược
             };
 
             const payload = { action: 'saveEventDetails', id: templateId, eventDetails: evData };
