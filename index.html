@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>QUẢN LÝ THIỆP MỜI</title>
-    <!-- Favicon hiển thị trên tab trình duyệt -->
+    
+    <!-- Cài đặt Favicon và Ảnh nền chia sẻ Zalo/Facebook -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/TuanLamVi/invite/main/favicon.png">
     <link rel="shortcut icon" type="image/png" href="https://raw.githubusercontent.com/TuanLamVi/invite/main/favicon.png">
-    
-    <!-- Ảnh Thumbnail hiển thị khi chia sẻ link qua Zalo, Facebook -->
     <meta property="og:image" content="https://raw.githubusercontent.com/TuanLamVi/sendinvite/main/logo.jpg">
     <meta property="og:type" content="website">
+
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script&family=Caveat&family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <style>
@@ -20,26 +20,28 @@
         .canvas-wrapper { position: relative; }
         canvas { width: 100%; border-radius: 14px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
         
-        .popup { position: absolute; bottom: 12px; left: 12px; right: 12px; background: rgba(255, 255, 255, 0.45); backdrop-filter: blur(15px); border-radius: 16px; padding: 12px; box-shadow: 0 6px 18px rgba(0,0,0,0.15); display: none; z-index: 20; border: 1px solid rgba(255,255,255,0.6); }
-        .popup.active { bottom: 62px; }
-        .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .popup-title { font-size: 15px; font-weight: 700; color: #e91e63; }
+        /* ĐÃ SỬA CSS POPUP THÀNH DẠNG BOTTOM SHEET CHUẨN APP */
+        .popup { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.96); backdrop-filter: blur(15px); border-radius: 20px 20px 0 0; padding: 20px; box-shadow: 0 -10px 30px rgba(0,0,0,0.15); display: none; z-index: 2000; border-top: 1px solid rgba(255,255,255,0.6); box-sizing: border-box; max-height: 80vh; overflow-y: auto; }
+        .popup.active { display: block; animation: slideUp 0.3s ease-out; }
+        
+        .popup-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 2px dashed #fbc2eb; padding-bottom: 10px; }
+        .popup-title { font-size: 16px; font-weight: 700; color: #e91e63; }
         .close-btn { width: 34px; height: 34px; border: none; background: #ff1744; color: white; border-radius: 50%; font-size: 22px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(255,23,68,0.3); }
-        .section { margin-bottom: 8px; }
-        .section-label { font-size: 11.5px; font-weight: 700; color: #e91e63; margin-bottom: 4px; display: block; }
+        .section { margin-bottom: 12px; }
+        .section-label { font-size: 12px; font-weight: 700; color: #e91e63; margin-bottom: 6px; display: block; }
         .input-group { position: relative; display: flex; align-items: center; }
-        .input-group input, select { width: 100%; padding: 10px 35px 10px 12px; border-radius: 11px; border: 2px solid #f8c4d0; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; }
-        select { padding: 10px 12px; }
+        .input-group input, select { width: 100%; padding: 12px 35px 12px 12px; border-radius: 11px; border: 2px solid #f8c4d0; font-size: 15px; outline: none; box-sizing: border-box; font-family: inherit; background: white;}
+        select { padding: 12px; }
         .clear-btn { position: absolute; right: 10px; background: #ccc; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 0; }
-        .size-slider { background: rgba(255,255,255,0.8); padding: 8px 12px; border-radius: 11px; display: flex; align-items: center; gap: 10px; }
+        .size-slider { background: #fff0f5; padding: 10px 12px; border-radius: 11px; display: flex; align-items: center; gap: 10px; border: 1px solid #fbc2eb;}
         .size-slider input[type="range"] { flex: 1; accent-color: #e91e63; }
-        #size-value { font-weight: 700; font-size: 15px; min-width: 36px; text-align: center; color: #e91e63; }
-        .palette { display: flex; justify-content: space-around; margin: 6px 0; }
-        .color-dot { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
-        .action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-        .btn-full { grid-column: span 2; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 12px; border-radius: 11px; border: none; font-weight: bold; font-size: 14.5px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
-        .btn-download { background: #ff758c; color: white; padding: 11px; border-radius: 11px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-share { background: #36d1dc; color: white; padding: 11px; border-radius: 11px; border: none; font-weight: bold; cursor: pointer; }
+        #size-value { font-weight: 700; font-size: 16px; min-width: 36px; text-align: center; color: #e91e63; }
+        .palette { display: flex; justify-content: space-around; margin: 10px 0; }
+        .color-dot { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid white; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
+        .action-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn-full { grid-column: span 2; background: linear-gradient(135deg, #4CAF50, #2E7D32); color: white; padding: 14px; border-radius: 11px; border: none; font-weight: bold; font-size: 15px; cursor: pointer; text-transform: uppercase; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
+        .btn-download { background: #ff758c; color: white; padding: 12px; border-radius: 11px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
+        .btn-share { background: #36d1dc; color: white; padding: 12px; border-radius: 11px; border: none; font-weight: bold; cursor: pointer; font-size: 14px;}
 
         .main-btn-group { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
         .btn-main-action { width: 100%; padding: 14px; border-radius: 12px; font-size: 14px; font-weight: bold; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
@@ -57,11 +59,9 @@
         .ep-group input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; box-sizing: border-box; font-family: inherit;}
         .ep-save-btn { width: 100%; background: #e91e63; color: white; padding: 14px; border: none; border-radius: 10px; font-weight: bold; font-size: 16px; margin-top: 10px; cursor: pointer; }
 
-        /* KHU VỰC KHÁCH MỜI DỰ KIẾN */
         .guest-container { width: 100%; max-width: 420px; background: white; border-radius: 22px; padding: 20px 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; margin-bottom: 20px; box-sizing: border-box; overflow: hidden; }
         .guest-header { font-size: 16px; font-weight: bold; color: #e91e63; margin-bottom: 15px; text-align: center; border-bottom: 2px dashed #fbc2eb; padding-bottom: 10px; }
         
-        /* FORM NHẬP NHANH */
         .quick-add-box { background: #e8f5e9; padding: 15px; border-radius: 14px; margin-bottom: 15px; border: 2px dashed #4CAF50; }
         .quick-add-title { font-size: 14px; font-weight: bold; color: #2E7D32; margin-bottom: 10px; display: flex; align-items: center; gap: 5px; }
         .quick-add-input { width: 100%; padding: 10px 12px; border: 1px solid #a5d6a7; border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; margin-bottom: 10px; outline: none; }
@@ -111,22 +111,23 @@
     <div class="container">
         <div class="canvas-wrapper" id="wrapper">
             <canvas id="canvas"></canvas>
-            
-            <div class="popup" id="popup">
-                <div class="popup-header"><div class="popup-title">✏️ Chỉnh sửa thiệp</div><button class="close-btn" onclick="hidePopup()">×</button></div>
-                <div class="section"><label class="section-label">NỘI DUNG</label><div class="input-group"><input type="text" id="text" placeholder="Nhập tên khách mời..."><button class="clear-btn" onclick="clearText()">X</button></div></div>
-                <div class="section"><label class="section-label">KIỂU CHỮ</label><select id="font"><option value="'Great Vibes'">Great Vibes</option><option value="'Dancing Script'">Dancing Script</option><option value="'Caveat'">Caveat</option><option value="'Be Vietnam Pro'">Be Vietnam Pro</option></select></div>
-                <div class="section"><label class="section-label">KÍCH THƯỚC CHỮ</label><div class="size-slider"><input type="range" id="size" min="40" max="280" value="80" step="2"><span id="size-value">80</span></div></div>
-                <div class="section"><label class="section-label">MÀU CHỮ</label><div class="palette" id="palette"></div></div>
-                <div class="action-group"><button class="btn-download" onclick="save()">📥 TẢI VỀ</button><button class="btn-share" onclick="share()">📤 GỬI</button><button class="btn-full" onclick="saveToGuestList()">💾 LƯU VÀO DANH SÁCH</button></div>
-            </div>
         </div>
       
         <div class="main-btn-group">
-            <button class="btn-main-action btn-edit-text" onclick="showPopup()">✍️ GHI TÊN KHÁCH & GỬI NHANH</button>
+            <button class="btn-main-action btn-edit-text" onclick="showPopup()">✍️ CHỈNH TÊN KHÁCH & XUẤT THIỆP</button>
             <button class="btn-main-action btn-fill-event" onclick="showEventPopup()">📝 NHẬP THÔNG TIN SỰ KIỆN</button>
             <button class="btn-main-action btn-copy-link" onclick="copyDetailLink()">🔗 COPY LINK CHI TIẾT ĐỂ GỬI</button>
         </div>
+    </div>
+
+    <!-- POPUP CHỈNH SỬA THIỆP (ĐÃ CHUYỂN THÀNH BOTTOM SHEET) -->
+    <div class="popup" id="popup">
+        <div class="popup-header"><div class="popup-title">✏️ Chỉnh sửa thiệp</div><button class="close-btn" onclick="hidePopup()">×</button></div>
+        <div class="section"><label class="section-label">NỘI DUNG</label><div class="input-group"><input type="text" id="text" placeholder="Nhập tên khách mời..."><button class="clear-btn" onclick="clearText()">X</button></div></div>
+        <div class="section"><label class="section-label">KIỂU CHỮ</label><select id="font"><option value="'Great Vibes'">Great Vibes</option><option value="'Dancing Script'">Dancing Script</option><option value="'Caveat'">Caveat</option><option value="'Be Vietnam Pro'">Be Vietnam Pro</option></select></div>
+        <div class="section"><label class="section-label">KÍCH THƯỚC CHỮ</label><div class="size-slider"><input type="range" id="size" min="40" max="280" value="80" step="2"><span id="size-value">80</span></div></div>
+        <div class="section"><label class="section-label">MÀU CHỮ</label><div class="palette" id="palette"></div></div>
+        <div class="action-group"><button class="btn-download" onclick="save()">📥 TẢI VỀ</button><button class="btn-share" onclick="share()">📤 GỬI</button><button class="btn-full" onclick="saveToGuestList()">💾 LƯU VÀO DANH SÁCH</button></div>
     </div>
 
     <!-- POPUP KHAI BÁO THÔNG TIN SỰ KIỆN -->
@@ -144,11 +145,10 @@
         </div>
     </div>
 
-    <!-- KHU VỰC KHÁCH MỜI DỰ KIẾN (ĐÃ NÂNG CẤP MỚI TOÀN BỘ) -->
+    <!-- KHU VỰC KHÁCH MỜI DỰ KIẾN -->
     <div class="guest-container" id="guestContainer">
         <div class="guest-header">📋 KHÁCH MỜI DỰ KIẾN (Tổng: <span id="totalGuests">0</span>)</div>
         
-        <!-- Form nhập nhanh -->
         <div class="quick-add-box">
             <div class="quick-add-title">📝 Thêm nhanh khách dự kiến:</div>
             <input type="text" id="quickName" class="quick-add-input" placeholder="Tên khách mời..." onkeypress="if(event.key==='Enter') document.getElementById('quickNote').focus()">
@@ -157,8 +157,6 @@
         </div>
 
         <div style="text-align: center; font-size: 12px; color: #999; margin-bottom: 10px;">Vuốt trái/phải để chuyển trang 👈👉</div>
-        
-        <!-- Khu vực hiển thị danh sách -->
         <div id="guestListRender"></div>
         
         <div class="pagination"><button class="page-btn" id="prevBtn" onclick="changePage(-1)">⬅️ Trước</button><div class="page-info" id="pageInfo">1 / 1</div><button class="page-btn" id="nextBtn" onclick="changePage(1)">Sau ➡️</button></div>
@@ -175,7 +173,8 @@
     </div>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbxJWMMOscQWsCGwxdQxcrqmnmJ5wGsYle8ZFt1O6F4bEIr57h188KOi23BdkaTc9hkT/exec"; // <--- NHỚ DÁN LẠI LINK API VÀO ĐÂY NHÉ
+        // API CỦA BẠN ĐÃ ĐƯỢC GẮN CHUẨN
+        const API_URL = "https://script.google.com/macros/s/AKfycbxJWMMOscQWsCGwxdQxcrqmnmJ5wGsYle8ZFt1O6F4bEIr57h188KOi23BdkaTc9hkT/exec"; 
 
         const canvas = document.getElementById("canvas"); const ctx = canvas.getContext("2d");
         const popup = document.getElementById("popup"); const wrapper = document.getElementById("wrapper");
@@ -254,8 +253,8 @@
         sizeSlider.addEventListener("input", () => { sizeValue.textContent = sizeSlider.value; draw(); });
         textInput.addEventListener("input", draw); fontSelect.addEventListener("change", draw);
         
-        function showPopup() { popup.style.display = "block"; setTimeout(() => popup.classList.add("active"), 10); }
-        function hidePopup() { popup.classList.remove("active"); setTimeout(() => { popup.style.display = "none"; }, 300); }
+        function showPopup() { popup.classList.add("active"); }
+        function hidePopup() { popup.classList.remove("active"); }
         wrapper.addEventListener("click", (e) => { if (e.target === wrapper || e.target === canvas) hidePopup(); });
 
         function showEventPopup() { document.getElementById("eventPopupOverlay").style.display = "flex"; }
@@ -291,7 +290,6 @@
 
         async function fetchGuestList() {
             if(!templateId) return;
-            // LUÔN LUÔN HIỂN THỊ KHU VỰC KHÁCH MỜI ĐỂ HỌ CÒN NHẬP
             document.getElementById('guestContainer').style.display = 'block'; 
             try {
                 let res = await fetch(API_URL + "?action=getGuests&inviteId=" + templateId);
@@ -302,7 +300,6 @@
             } catch(e) {}
         }
 
-        // TÍNH NĂNG NHẬP NHANH MỚI
         function quickAddGuest() {
             if(!templateId) return alert("Vui lòng tải thiệp từ trang quản trị!");
             const name = document.getElementById("quickName").value.trim();
@@ -318,13 +315,12 @@
             document.getElementById("quickNote").value = '';
             currentPage = 1; 
             renderGuest(); 
-            document.getElementById("quickName").focus(); // Tự động trỏ lại ô nhập để nhập tiếp người khác
+            document.getElementById("quickName").focus(); 
             
             const formData = new URLSearchParams(); formData.append("data", JSON.stringify(payload));
             fetch(API_URL, { method: 'POST', body: formData }).catch(e => console.log("Lỗi mạng"));
         }
 
-        // Dành cho Nút "LƯU VÀO DANH SÁCH" cũ trong form chỉnh sửa
         function saveToGuestList() {
             if(!templateId) return alert("Vui lòng tải thiệp từ trang quản trị!");
             const name = textInput.value.trim(); if(!name) return alert("Vui lòng nhập tên khách mời trước khi lưu!");
@@ -369,9 +365,7 @@
         }
 
         function renderGuest() {
-            // Cập nhật tổng số khách
             document.getElementById('totalGuests').innerText = guestList.length;
-
             const container = document.getElementById('guestListRender'); 
             container.innerHTML = ''; 
             
@@ -396,7 +390,7 @@
                         <div class="guest-name-row"><div style="flex: 1;"><div class="guest-name-text">${guest.guestName}</div>
                                 <label class="guest-status"><input type="checkbox" id="status_${guest.guestId}" ${isSent ? 'checked' : ''} onchange="toggleStatus('${guest.guestId}', this, ${i})"> Đã chốt gửi thiệp</label></div>
                             <div class="guest-small-actions"><button class="btn-edit-guest" onclick="editGuestName('${guest.guestId}', ${i})">✏️ Sửa</button><button class="btn-delete-guest" onclick="deleteGuest('${guest.guestId}', ${i})">❌ Xóa</button></div></div>
-                        <input type="text" class="guest-note" id="note_${guest.guestId}" placeholder="Ghi chú (VD: bạn bố, bạn học...)" value="${guest.note || ''}">
+                        <input type="text" class="guest-note" id="note_${guest.guestId}" placeholder="Ghi chú (VD: bạn bố, đại học...)" value="${guest.note || ''}">
                         <div class="guest-actions"><button class="btn-save-note" onclick="saveNote('${guest.guestId}', ${i})">Lưu</button><button class="btn-send-guest" onclick="sendSpecificGuest('${guest.guestName}', '${guest.guestId}', ${i})">📤 Gửi Thiệp Này</button></div>
                     </div>`;
             }
