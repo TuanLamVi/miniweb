@@ -67,8 +67,68 @@
         .radio-group label { display: flex; align-items: center; gap: 5px; color: #333; margin: 0; cursor: pointer; font-weight: bold;}
         .radio-group input { width: 20px; height: 20px; }
 
-        .upload-area { border: 2px dashed #4CAF50; background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center; }
-        .btn-upload-direct { background: #2E7D32; color: white; padding: 14px; font-size: 15px; width: 100%; border-radius: 8px; font-weight: bold; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        /* GIAO DIỆN TẢI ẢNH MỚI (CHUẨN BẢN VẼ) */
+        .upload-area-v2 {
+            border: 2px dashed #4CAF50;
+            background: #f4fbf4; /* Nền xanh nhạt */
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        .btn-external-upload {
+            background: #388E3C; /* Xanh lá đậm */
+            color: white;
+            padding: 14px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 5px auto;
+            display: block;
+        }
+        .helper-text {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+        .highlight-blue {
+            background: #3f51b5; /* Nền xanh dương */
+            color: white;
+            padding: 2px 6px;
+            font-weight: bold;
+        }
+        .label-red {
+            color: #e91e63; /* Chữ đỏ hồng */
+            font-weight: bold;
+            font-size: 16px;
+            text-align: left;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .input-pink {
+            border: 2px solid #f8bbd0 !important; /* Viền hồng */
+            border-radius: 8px;
+            padding: 14px !important;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        .btn-update-preview {
+            background: #4CAF50; /* Xanh lá nhạt hơn */
+            color: white;
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
+        }
         
         @media (max-width: 600px) {
             body { padding: 0; background: white; }
@@ -79,6 +139,7 @@
             .btn-primary { width: 100%; padding: 14px; }
             .form-group { padding: 12px; }
             .radio-group label { width: 100%; }
+            .upload-area-v2 { padding: 15px; }
         }
     </style>
 </head>
@@ -123,8 +184,8 @@
             <div class="form-group">
                 <label>🔠 2. Cỡ chữ tên khách:</label>
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="range" id="previewSize" min="40" max="280" value="80" step="2" style="flex: 1;" oninput="updatePreviewSize()">
-                    <span id="previewSizeValue" style="font-weight: bold; color: #e91e63; font-size: 18px;">80</span>
+                    <input type="range" id="previewSize" min="10" max="120" value="30" step="2" style="flex: 1;" oninput="updatePreviewSize()">
+                    <span id="previewSizeValue" style="font-weight: bold; color: #e91e63; font-size: 18px;">30</span>
                 </div>
             </div>
 
@@ -133,20 +194,15 @@
                 <input type="date" id="endDateInput">
             </div>
 
-            <div class="upload-area">
-                <label style="color: #2E7D32; font-size: 16px;">🖼️ 4. Ảnh nền thiệp mời:</label>
+            <!-- KHU VỰC TẢI ẢNH MỚI (Y HỆT ẢNH BẠN YÊU CẦU) -->
+            <div class="upload-area-v2">
+                <button type="button" class="btn-external-upload" onclick="window.open('https://postimages.org/', '_blank')">TẢI ẢNH TỪ ĐIỆN THOẠI LÊN MẠNG</button>
+                <div class="helper-text">(Tải ảnh lên web mới rồi copy dòng <span class="highlight-blue">Direct link</span>)</div>
+
+                <label class="label-red">🖼️ 4. Dán link ảnh nền bạn vừa copy vào đây:</label>
+                <input type="text" id="imgUrl" class="input-pink" placeholder="Dán link (Direct link) vào đây...">
                 
-                <button type="button" class="btn-upload-direct" onclick="document.getElementById('fileUploadInput').click()">
-                    📤 BẤM ĐỂ CHỌN ẢNH TỪ ĐIỆN THOẠI
-                </button>
-                <input type="file" id="fileUploadInput" accept="image/*" style="display: none;" onchange="uploadImageToImgBB(this)">
-                
-                <div style="margin: 10px 0; font-size: 13px; color: #666; font-weight: bold;">--- HOẶC DÁN LINK VÀO BÊN DƯỚI ---</div>
-                
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="imgUrl" placeholder="Dán link ảnh (nếu có)..." style="flex: 1; padding: 10px;">
-                    <button type="button" class="btn-success" onclick="loadImage()">Tải</button>
-                </div>
+                <button type="button" class="btn-update-preview" onclick="loadImage()">Cập nhật ảnh để xem trước</button>
             </div>
 
             <div class="form-group" style="border: 2px dashed #2196F3; background: white;">
@@ -211,46 +267,6 @@
         function showLoading(show, text = "Đang kết nối hệ thống...") { 
             document.getElementById('loadingText').innerHTML = text;
             document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none'; 
-        }
-
-        // TẢI ẢNH LÊN MẠNG (KHÔNG CẦN API KEY)
-        async function uploadImageToImgBB(input) {
-            const file = input.files[0];
-            if (!file) return;
-
-            if (file.size > 5 * 1024 * 1024) {
-                alert("⚠️ Vui lòng chọn ảnh có dung lượng nhỏ hơn 5MB để thiệp tải nhanh!");
-                input.value = '';
-                return;
-            }
-
-            showLoading(true, "Đang tải ảnh lên mạng...<br><span style='font-size:14px; font-weight:normal;'>Tuỳ mạng nhanh hay chậm, chờ chút nhé! ⏳</span>");
-            
-            const formData = new FormData();
-            formData.append('image', file);
-            
-            try {
-                const response = await fetch('https://tmpfiles.org/api/v1/upload', { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                const data = await response.json();
-                
-                if (data.status === 'success') {
-                    const originalUrl = data.data.url;
-                    const directLink = originalUrl.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-
-                    document.getElementById('imgUrl').value = directLink; 
-                    loadImage(); 
-                } else {
-                    alert('Lỗi máy chủ tải ảnh! Hãy thử dán link thủ công.');
-                }
-            } catch (error) {
-                alert('Lỗi mạng! Không thể kết nối tới máy chủ tải ảnh.');
-            } finally {
-                showLoading(false);
-                input.value = ''; 
-            }
         }
 
         async function fetchTemplates() {
@@ -381,7 +397,7 @@
             const note = document.getElementById('noteInput').value || "Thiệp không tên";
             const imageUrl = document.getElementById('imgUrl').value.trim();
             const endDate = document.getElementById('endDateInput').value; 
-            if(!imageUrl) return alert("Vui lòng tải ảnh lên trước!");
+            if(!imageUrl) return alert("Vui lòng dán link ảnh nền vào ô số 4 trước!");
 
             if(qrConfig.enable) { qrConfig.content = window.location.href.split('setup.html')[0] + 'chitiet.html?id=' + id; }
 
