@@ -396,7 +396,7 @@
                         <div class="guest-name-row"><div style="flex: 1;"><div class="guest-name-text">${guest.guestName}</div>
                                 <label class="guest-status"><input type="checkbox" id="status_${guest.guestId}" ${isSent ? 'checked' : ''} onchange="toggleStatus('${guest.guestId}', this, ${i})"> Đã chốt gửi thiệp</label></div>
                             <div class="guest-small-actions"><button class="btn-edit-guest" onclick="editGuestName('${guest.guestId}', ${i})">✏️ Sửa</button><button class="btn-delete-guest" onclick="deleteGuest('${guest.guestId}', ${i})">❌ Xóa</button></div></div>
-                        <input type="text" class="guest-note" id="note_${guest.guestId}" placeholder="Ghi chú (VD: bạn bố, đại học...)" value="${guest.note || ''}">
+                        <input type="text" class="guest-note" id="note_${guest.guestId}" placeholder="Ghi chú (VD: bạn bố, bạn học...)" value="${guest.note || ''}">
                         <div class="guest-actions"><button class="btn-save-note" onclick="saveNote('${guest.guestId}', ${i})">Lưu</button><button class="btn-send-guest" onclick="sendSpecificGuest('${guest.guestName}', '${guest.guestId}', ${i})">📤 Gửi Thiệp Này</button></div>
                     </div>`;
             }
